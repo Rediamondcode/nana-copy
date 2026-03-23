@@ -1,32 +1,33 @@
-name: Java CI with Gradle
+name: Java CI with Gradle and Docker
 
 on:
   push:
-    branches: ["master"]
+    branches:
+      - main
   pull_request:
-    branches: ["master"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
+          distribution: temurin
           java-version: '17'
-          distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Upgrade Gradle Wrapper to 8.3
+        run: ./gradlew wrapper --gradle-version 8.3 --distribution-type all
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Clean Gradle Cache
+        run: ./gradlew clean
+
+      - name: Build Java Project
+        run: ./gradlew build --no-daemon --stacktrace
 
       - name: Login to Docker Hub
         if: github.event_name == 'push'
@@ -38,7 +39,3 @@ jobs:
       - name: Build Docker Image
         if: github.event_name == 'push'
         run: docker build -t yusuf523/hello-world .
-
-      - name: Push Docker Image
-        if: github.event_name == 'push'
-        run: docker push yusuf523/hello-world
