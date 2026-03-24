@@ -22,23 +22,25 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
+
+      # Make gradlew executable (IMPORTANT)
+      - name: Grant execute permission
+        run: chmod +x gradlew
 
       # Build
-      - name: Build with Maven
-        run: mvn -B clean package
+      - name: Build with Gradle
+        run: ./gradlew clean build --no-daemon
 
       # Test
       - name: Run Tests
-        run: mvn test
+        run: ./gradlew test --no-daemon
 
       # Upload artifact
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-jar
-          path: target/*.jar
-          retention-days: 5
+          path: build/libs/*.jar
 
       # Login to Docker Hub
       - name: Login to Docker Hub
@@ -56,4 +58,4 @@ jobs:
       # Push Docker image
       - name: Push Docker Image
         if: github.event_name == 'push'
-        run: docker push yusuf523/hello-world:latest 
+        run: docker push yusuf523/hello-world:latest
