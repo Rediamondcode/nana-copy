@@ -56,4 +56,4 @@ jobs:
       # Push Docker image
       - name: Push Docker Image
         if: github.event_name == 'push'
-        run: docker push yusuf523/hello-world:latest
+        run: docker push yusuf523/hello-world:latest 
