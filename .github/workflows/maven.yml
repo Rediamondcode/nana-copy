@@ -18,8 +18,8 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
+        cache: gradle
+    - name: Build with gradle
       run: mvn -B package --file pom.xml
 
     - name: Update dependency graph
