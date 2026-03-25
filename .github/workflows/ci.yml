@@ -1,70 +1,19 @@
-name: Java CI/CD Pipeline
+name: My First Pipeline
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
 
 jobs:
-  build:
+  hello-job:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Say Hello
+        run: echo "Hello, CI/CD World!"
 
-      # 2. Setup Java
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: gradle
+      - name: Print Date
+        run: date
 
-      # 3. Ensure Gradle wrapper works
-      - name: Grant execute permission
-        run: chmod +x gradlew
-
-      # 4. Verify Gradle version (VERY IMPORTANT)
-      - name: Check Gradle version
-        run: ./gradlew --version
-
-      # 5. Clean build (prevents cache corruption issues)
-      - name: Clean project
-        run: ./gradlew clean --no-daemon
-
-      # 6. Build
-      - name: Build with Gradle
-        run: ./gradlew build --no-daemon
-
-      # 7. Upload artifact
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-jar
-          path: build/libs/*.jar
-
-      # 8. Login to Docker Hub
-      - name: Login to Docker Hub
-        if: github.event_name == 'push'
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # 9. Build Docker image (with tag)
-      - name: Build Docker Image
-        if: github.event_name == 'push'
-        run: |
-          docker build -t yusuf523/hello-world:latest .
-          docker tag yusuf523/hello-world:latest yusuf523/hello-world:${{ github.sha }}
-
-      # 10. Push Docker image
-      - name: Push Docker Image
-        if: github.event_name == 'push'
-        run: |
-          docker push yusuf523/hello-world:latest
-          docker push yusuf523/hello-world:${{ github.sha }}
+      - name: Show Files
+        run: ls -la
